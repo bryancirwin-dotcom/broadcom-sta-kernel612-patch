@@ -1,6 +1,5 @@
 # broadcom-sta-kernel612-patch
 
-[![lint](https://github.com/bryancirwin-dotcom/broadcom-sta-kernel612-patch/actions/workflows/lint.yml/badge.svg)](https://github.com/bryancirwin-dotcom/broadcom-sta-kernel612-patch/actions/workflows/lint.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 A one-line source fix that lets Debian's `broadcom-sta-dkms` (the proprietary
@@ -210,16 +209,27 @@ included in this repository.
 ## Contributing
 
 Scripts in this repo are run as **root** and can unload a wireless driver, so
-they are held to a slightly higher bar than usual:
+they are held to a slightly higher bar than usual. Run the gate before pushing:
 
-- `shellcheck -S warning` must be clean (CI enforces it)
-- `bash -n` and `dash -n` must both pass — keeping them POSIX-parseable
-- **keep `wl-6.12.patch` at one line.** CI fails the build if it grows past a
-  trivial diff; if the kernel needs more than an include swap, that's a signal
-  the approach has changed and the README should say so
-- **never commit Broadcom's driver source.** CI greps for it and
-  `.gitignore` blocks the filenames as a second line of defence
-- new checks belong in `check-wl-patch.sh`, which the host's health gate calls
+```sh
+./lint.sh        # exit 0 = clean
+```
+
+It checks, and every item below is enforced by it rather than by convention:
+
+- `shellcheck -S warning` is clean across all scripts
+- `bash -n` and `dash -n` both pass — keeping them POSIX-parseable
+- **`wl-6.12.patch` stays a one-line change.** If it grows past a trivial diff,
+  that is a signal the approach has changed and this README needs to say so —
+  more than an include swap means the kernel interface moved in a way worth
+  documenting, not papering over
+- **no proprietary Broadcom driver source.** `lint.sh` greps shipped files for
+  driver internals, and `.gitignore` blocks the filenames as a second line of
+  defence
+- no source-tree debris (`wl_linux.c`, `*.orig`) tracked by git
+
+New checks belong in `lint.sh` (repo-wide) or `check-wl-patch.sh` (machine
+state — the host's health gate calls that one).
 
 `test-wl-recovery.sh` reverts the source on purpose to prove the safety net
 works — run it only where breaking WiFi for ~a minute is acceptable.
