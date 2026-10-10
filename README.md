@@ -1,5 +1,6 @@
 # broadcom-sta-kernel612-patch
 
+[![lint](https://github.com/bryancirwin-dotcom/broadcom-sta-kernel612-patch/actions/workflows/lint.yml/badge.svg)](https://github.com/bryancirwin-dotcom/broadcom-sta-kernel612-patch/actions/workflows/lint.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 A one-line source fix that lets Debian's `broadcom-sta-dkms` (the proprietary
@@ -215,7 +216,10 @@ they are held to a slightly higher bar than usual. Run the gate before pushing:
 ./lint.sh        # exit 0 = clean
 ```
 
-It checks, and every item below is enforced by it rather than by convention:
+CI runs that **same script** on every push to `main` and on every pull request,
+so a local pass and a CI pass can never disagree.
+
+It checks, and every item below is enforced rather than left to convention:
 
 - `shellcheck -S warning` is clean across all scripts
 - `bash -n` and `dash -n` both pass — keeping them POSIX-parseable
