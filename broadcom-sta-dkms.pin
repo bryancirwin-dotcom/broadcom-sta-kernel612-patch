@@ -1,0 +1,18 @@
+# ---------------------------------------------------------------------------
+# Protects the local kernel-6.12 compat patch for the BCM4331 WiFi driver.
+#
+# broadcom-sta-dkms ships a source tree in /usr/src that does NOT compile on
+# kernel >= 6.2 (it includes <asm/unaligned.h>, removed upstream). The local
+# fix is a one-line change to <linux/unaligned.h>. An apt upgrade would replace
+# that source with pristine upstream and silently revert the fix, breaking the
+# dkms build and dropping this machine to b43 (2.4 GHz only).
+#
+# Pinning to the exact installed version prevents any upgrade.
+# Recovery if it ever does revert:
+#     sudo /usr/local/sbin/fix-broadcom-sta-6.12.sh --reload
+# Verify any time:
+#     sudo /usr/local/sbin/check-wl-patch.sh
+# ---------------------------------------------------------------------------
+Package: broadcom-sta-dkms
+Pin: version 6.30.223.271-23
+Pin-Priority: 1001
