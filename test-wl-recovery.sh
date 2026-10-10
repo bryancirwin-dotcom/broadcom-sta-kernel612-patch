@@ -15,10 +15,8 @@ echo ""
 echo "=== STEP 2: does the checker CATCH the reversion? ==="
 if /usr/local/sbin/check-wl-patch.sh; then
   echo "  *** BUG: checker PASSED on a reverted source ***"
-  RC=0
 else
   echo "  GOOD: checker exited non-zero (it caught the reversion)"
-  RC=1
 fi
 echo "  checker exit code: $(/usr/local/sbin/check-wl-patch.sh >/dev/null 2>&1; echo $?)  (non-zero = correctly failed)"
 
@@ -43,8 +41,10 @@ echo "  exit: $?"
 
 echo ""
 echo "=== FINAL STATE ==="
+K=$(uname -r)
+KO="/lib/modules/$K/updates/dkms/wl.ko.xz"
 echo "  line    : $(grep -m1 'unaligned.h' "$F" | sed 's/^ *//')"
-echo "  wl.ko   : $(ls -la /lib/modules/$(uname -r)/updates/dkms/wl.ko.xz 2>/dev/null | awk '{print $5" bytes, "$6" "$7" "$8}' || echo MISSING)"
+echo "  wl.ko   : $(ls -la "$KO" 2>/dev/null | awk '{print $5" bytes, "$6" "$7" "$8}' || echo MISSING)"
 echo "  loaded  : $(lsmod | grep -q '^wl ' && echo yes || echo NO)"
 echo "  wlp4s0  : $(cat /sys/class/net/wlp4s0/operstate 2>/dev/null || echo absent)"
 echo "  check   : $(/usr/local/sbin/check-wl-patch.sh >/dev/null 2>&1 && echo PASS || echo FAIL)"

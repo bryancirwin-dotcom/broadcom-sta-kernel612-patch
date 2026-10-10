@@ -1,0 +1,20 @@
+# editor / OS noise
+*~
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# patch tooling leftovers
+*.orig
+*.rej
+*.bak
+
+# ---------------------------------------------------------------------------
+# NEVER commit Broadcom's proprietary driver source. broadcom-sta is Debian
+# non-free; only the one-line diff may be published. CI enforces this too --
+# this entry just stops it being staged by accident in the first place.
+# ---------------------------------------------------------------------------
+wl_linux.c
+wl_linux.c.pristine
+wl_linux.c.orig*

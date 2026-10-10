@@ -1,5 +1,8 @@
 # broadcom-sta-kernel612-patch
 
+[![lint](https://github.com/bryancirwin-dotcom/broadcom-sta-kernel612-patch/actions/workflows/lint.yml/badge.svg)](https://github.com/bryancirwin-dotcom/broadcom-sta-kernel612-patch/actions/workflows/lint.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 A one-line source fix that lets Debian's `broadcom-sta-dkms` (the proprietary
 **`wl`** driver) compile against **Linux 6.12** — plus scripts that apply it,
 verify it, and stop `apt` from silently reverting it.
@@ -193,3 +196,30 @@ this patch cannot help — install it first.
 **Recovery if it ever breaks anyway:** the in-kernel `b43` driver still works,
 but 2.4 GHz only. Remove `/etc/modprobe.d/blacklist-b43.conf` and unload `wl`
 to fall back.
+
+---
+
+## License
+
+[MIT](./LICENSE). The shell scripts and documentation here are original work.
+
+`wl-6.12.patch` is a trivially-derived one-line diff against Broadcom's
+non-free source; that source stays under Broadcom's own terms and is **not**
+included in this repository.
+
+## Contributing
+
+Scripts in this repo are run as **root** and can unload a wireless driver, so
+they are held to a slightly higher bar than usual:
+
+- `shellcheck -S warning` must be clean (CI enforces it)
+- `bash -n` and `dash -n` must both pass — keeping them POSIX-parseable
+- **keep `wl-6.12.patch` at one line.** CI fails the build if it grows past a
+  trivial diff; if the kernel needs more than an include swap, that's a signal
+  the approach has changed and the README should say so
+- **never commit Broadcom's driver source.** CI greps for it and
+  `.gitignore` blocks the filenames as a second line of defence
+- new checks belong in `check-wl-patch.sh`, which the host's health gate calls
+
+`test-wl-recovery.sh` reverts the source on purpose to prove the safety net
+works — run it only where breaking WiFi for ~a minute is acceptable.
