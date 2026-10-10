@@ -1,0 +1,41 @@
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# least privilege: this workflow only needs to read the repo
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: shellcheck + syntax + guards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        # actions/checkout@v7.0.1, pinned by commit SHA rather than a
+        # movable tag (unpinned actions are what OpenSSF Scorecard flags)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Ensure tools
+        run: |
+          missing=""
+          command -v shellcheck >/dev/null 2>&1 || missing="$missing shellcheck"
+          command -v dash       >/dev/null 2>&1 || missing="$missing dash"
+          if [ -n "$missing" ]; then
+            sudo apt-get update
+            # shellcheck needs no third-party action -> one less dependency
+            sudo apt-get install -y $missing
+          fi
+          shellcheck --version | sed -n '1,2p'
+
+      # All checks live in lint.sh so a local `./lint.sh` and CI can never
+      # drift apart -- CI is a thin wrapper around the same script.
+      - name: Run quality gate
+        run: ./lint.sh
